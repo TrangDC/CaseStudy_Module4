@@ -109,5 +109,4 @@ public class GameController {
         }
         return modelAndView;
     }
-
 }

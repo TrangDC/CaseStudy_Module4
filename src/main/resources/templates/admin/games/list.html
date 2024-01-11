@@ -28,7 +28,7 @@
     <form th:action="@{/games/filter}" method="get">
         <label for="category">Select Category:</label>
         <select id="category" name="id" class="form-control">
-            <option value="" selected> All</option>
+            <option value="0" selected> All</option>
             <th:block th:each="category : ${categories}">
                 <option th:value="${category.id}" th:text="${category.name}"></option>
             </th:block>
