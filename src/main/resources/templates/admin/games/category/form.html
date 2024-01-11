@@ -22,13 +22,6 @@
             <input type="text" class="form-control" id="name" placeholder="Enter Name Game" th:field="*{name}">
         </div>
     </div>
-    <div class="mb-3">
-        <label for="categories" class="form-label">Category</label>
-        <select class="form-select" id="categories" th:field="*{category}">
-            <option value="">-- Select a classroom --</option>
-            <option th:each="c : ${categories}"
-                    th:value="${c.id}" th:text="${c.name}"></option>
-        </select></div>
     <div class="form-group row">
         <label for="price" class="col-sm-2 col-form-label">Price</label>
         <div class="col-sm-10">
@@ -39,30 +32,6 @@
         <label for="description" class="col-sm-2 col-form-label">Description</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" id="description" placeholder="Enter Description" th:field="*{description}">
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="quantity" class="col-sm-2 col-form-label">Quantity</label>
-        <div class="col-sm-10">
-            <input type="number" class="form-control" id="quantity" placeholder="Enter Quantity" th:field="*{quantity}">
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="releaseDate" class="col-sm-2 col-form-label">Release Date</label>
-        <div class="col-sm-10">
-            <input type="date" class="form-control" id="releaseDate" placeholder="Enter Release Date" th:field="*{releaseDate}">
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="platform" class="col-sm-2 col-form-label">Platform</label>
-        <div class="col-sm-10">
-            <input type="text" class="form-control" id="platform" placeholder="Enter Platform" th:field="*{platform}">
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="rating" class="col-sm-2 col-form-label">Rating</label>
-        <div class="col-sm-10">
-            <input type="number" class="form-control" id="rating" placeholder="Enter Rating" th:field="*{rating}">
         </div>
     </div>
     <button type="submit" class="btn btn-primary mb-2">Submit Game</button>

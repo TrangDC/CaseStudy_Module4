@@ -1,6 +1,8 @@
 package com.example.case_study_m4.controller;
 
+import com.example.case_study_m4.model.Category;
 import com.example.case_study_m4.model.Game;
+import com.example.case_study_m4.service.ICategoryService;
 import com.example.case_study_m4.service.IGameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,14 @@ import java.util.Optional;
 public class GameController {
     @Autowired
     private IGameService gameService;
+
+    @Autowired
+    private ICategoryService categoryService;
+
+    @ModelAttribute("categories")
+    public Iterable<Category> listCategories() {
+        return categoryService.findAll();
+    }
 
     @GetMapping
     public ModelAndView listGames(@RequestParam(defaultValue = "0") int page) {
