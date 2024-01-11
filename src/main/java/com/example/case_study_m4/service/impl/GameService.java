@@ -1,5 +1,6 @@
 package com.example.case_study_m4.service.impl;
 
+import com.example.case_study_m4.model.Category;
 import com.example.case_study_m4.model.Game;
 import com.example.case_study_m4.repository.IGameRepository;
 import com.example.case_study_m4.service.IGameService;
@@ -43,5 +44,10 @@ public class GameService implements IGameService {
     @Override
     public Page<Game> searchByWord(String word, Pageable pageable) {
         return iGameRepository.findAllByNameContaining(word,pageable);
+    }
+
+    @Override
+    public Page<Game> findByCategory(Category category, Pageable pageable) {
+        return iGameRepository.findAllByCategory(category,pageable);
     }
 }

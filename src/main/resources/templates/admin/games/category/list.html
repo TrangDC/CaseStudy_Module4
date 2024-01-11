@@ -11,19 +11,9 @@
 <h1 style="text-align: center">CATEGORIES</h1>
 <div>
     <a type="button" class="btn btn-success" href="/categories/create">Create new category</a>
+    <a type="button" class="btn btn-success" href="/games">List Games</a>
 
 </div>
-<div class="col-md-4">
-    <form th:action="@{/categories/search}" method="get" >
-        <label>
-            <input type="text" name="keyword" id="keyword" class="form-control">
-        </label>
-        <button type="submit" value="Search" class="btn btn-primary">
-            Search
-        </button>
-    </form>
-</div>
-
 <table border="1" class="table table-dark table-striped">
     <tr>
         <th>STT</th>

@@ -1,5 +1,6 @@
 package com.example.case_study_m4.service;
 
+import com.example.case_study_m4.model.Category;
 import com.example.case_study_m4.model.Game;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,6 @@ public interface IGameService {
     public Iterable<Game> searchByWord(String word);
 
     public Page<Game> searchByWord(String word, Pageable pageable);
+
+    Page<Game> findByCategory(Category category, Pageable pageable);
 }

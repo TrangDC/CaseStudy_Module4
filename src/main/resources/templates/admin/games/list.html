@@ -11,6 +11,7 @@
 <h1 style="text-align: center">GAMES</h1>
 <div>
     <a type="button" class="btn btn-success" href="/games/create">Create new game</a>
+    <a type="button" class="btn btn-success" href="/categories">List Categories</a>
 
 </div>
 <div class="col-md-4">
@@ -20,6 +21,20 @@
         </label>
         <button type="submit" value="Search" class="btn btn-primary">
             Search
+        </button>
+    </form>
+</div>
+<div>
+    <form th:action="@{/games/filter}" method="get">
+        <label for="category">Select Category:</label>
+        <select id="category" name="id" class="form-control">
+            <option value="" selected> All</option>
+            <th:block th:each="category : ${categories}">
+                <option th:value="${category.id}" th:text="${category.name}"></option>
+            </th:block>
+        </select>
+        <button type="submit" class="btn btn-primary">
+            Filter
         </button>
     </form>
 </div>

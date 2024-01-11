@@ -93,4 +93,21 @@ public class GameController {
         return modelAndView;
     }
 
+    @GetMapping("/filter")
+    public ModelAndView filterGamesByCategory(@RequestParam("id") Long id,
+                                              @PageableDefault(size = 5) Pageable pageable) {
+        ModelAndView modelAndView = new ModelAndView("/admin/games/list");
+
+        Optional<Category> category = categoryService.findById(id);
+        if (category.isPresent()) {
+            Page<Game> games = gameService.findByCategory(category.get(), pageable);
+            modelAndView.addObject("games", games);
+            modelAndView.addObject("selectedCategory", category.get());
+        } else {
+            Page<Game> games = gameService.findAll(pageable);
+            modelAndView.addObject("games", games);
+        }
+        return modelAndView;
+    }
+
 }
