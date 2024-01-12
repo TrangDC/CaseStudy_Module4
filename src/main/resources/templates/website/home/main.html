@@ -11,7 +11,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../../static/style.css">
+
+    <style>
+        .brand-text {
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-text .text-primary {
+            font-size: 1.5em; /* Điều chỉnh kích thước chữ "T" */
+            font-weight: bold;
+            border: 3px solid #fff; /* Điều chỉnh độ đậm và màu viền */
+            border-radius: 8px; /* Điều chỉnh độ cong của viền */
+            padding: 5px; /* Điều chỉnh khoảng cách giữa chữ và viền */
+            margin-right: 5px; /* Điều chỉnh khoảng cách giữa chữ và chữ "Shop" */
+        }
+
+        .brand-text .text-shop {
+            font-size: 1em; /* Điều chỉnh kích thước chữ "Shop" */
+            font-weight: normal; /* Chữ "Shop" không in đậm */
+        }
+        .input-group-text .btn {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-group-text .btn:hover {
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 
 </head>
 <body>
@@ -50,7 +78,11 @@
     <div class="row align-items-center py-3 px-xl-5">
         <div class="col-lg-3 d-none d-lg-block">
             <a href="" class="text-decoration-none">
-                <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">T</span>Shop</h1>
+<!--                <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">T</span>Shop</h1>-->
+                <h1 class="m-0 display-5 font-weight-semi-bold brand-text">
+                    <span class="text-primary font-weight-bold border px-3 mr-1">T</span>
+                    <span class="text-shop">Shop</span>
+                </h1>
             </a>
         </div>
         <div class="col-lg-6 col-6 text-left">
@@ -58,9 +90,11 @@
                 <div class="input-group">
                     <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Search for game">
                     <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                        <i type="submit" value="Search" class="fa fa-search"></i>
-                            </span>
+                          <span class="input-group-text bg-transparent">
+    <button type="submit" value="Search" class="btn btn-primary">
+        <i class="fa fa-search"></i> <!-- Sử dụng icon thay vì chữ -->
+    </button>
+</span>
                     </div>
                 </div>
             </form>
@@ -81,15 +115,20 @@
         <div class="col-lg-3 d-none d-lg-block">
             <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
                 <h6 class="m-0">Categories</h6>
-                <i class="fa fa-angle-down text-dark"></i>
+
             </a>
             <nav class="collapse show navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical">
-                <div class="navbar-nav w-100 overflow-hidden" style="height: 410px">
-                    <!-- Duyệt qua danh sách categories và hiển thị mỗi mục -->
-                    <th:block th:each="category : ${categories}">
-                        <a href="#" class="nav-item nav-link" th:text="${category.name}"></a>
-                    </th:block>
-                </div>
+                <form th:action="@{/games/filter}" method="get">
+                    <select id="category" name="id" class="form-control">
+                        <option value="0" selected> All</option>
+                        <th:block th:each="category : ${categories}">
+                            <option th:value="${category.id}" th:text="${category.name}"></option>
+                        </th:block>
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        Filter
+                    </button>
+                </form>
             </nav>
         </div>
         <div class="col-lg-9">
@@ -164,7 +203,11 @@
     <div class="row px-xl-5 pt-5">
         <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
             <a href="" class="text-decoration-none">
-                <h1 class="mb-4 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border border-white px-3 mr-1">T</span>Shop</h1>
+                <!--                <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">T</span>Shop</h1>-->
+                <h1 class="m-0 display-5 font-weight-semi-bold brand-text">
+                    <span class="text-primary font-weight-bold border px-3 mr-1">T</span>
+                    <span class="text-shop">Shop</span>
+                </h1>
             </a>
             <p>Thank you everyone for supporting T-Shop, please remember us, thank you.</p>
             <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 My Dinh, Ha Noi, Viet Nam</p>
