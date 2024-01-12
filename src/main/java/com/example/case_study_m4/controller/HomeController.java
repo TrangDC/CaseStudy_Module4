@@ -1,5 +1,6 @@
 package com.example.case_study_m4.controller;
 
+import com.example.case_study_m4.model.Cart;
 import com.example.case_study_m4.model.Category;
 import com.example.case_study_m4.model.Game;
 import com.example.case_study_m4.service.ICategoryService;
@@ -10,16 +11,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/home")
+@SessionAttributes("cart")
 public class HomeController {
     @Autowired
     private IGameService gameService;
@@ -30,6 +29,11 @@ public class HomeController {
     @ModelAttribute("categories")
     public Iterable<Category> listCategories() {
         return categoryService.findAll();
+    }
+
+    @ModelAttribute("cart")
+    public Cart setUpCart() {
+        return new Cart();
     }
 
     @GetMapping
@@ -67,5 +71,24 @@ public class HomeController {
             modelAndView.addObject("games", games);
         }
         return modelAndView;
+    }
+
+
+    // thêm vào giỏ hàng
+    @GetMapping("/addToCart/{id}")
+    public String addToCart(@PathVariable Long id,
+                            @ModelAttribute Cart cart,
+                            @RequestParam("action") String action) {
+        Optional<Game> gameOptional = gameService.findById(id);
+
+        if(!gameOptional.isPresent()) {
+            return "/error_404";
+        }
+        if (action.equals("show")) {
+            cart.addProduct(gameOptional.get());
+            return "redirect:/shopping-cart";
+        }
+        cart.addProduct(gameOptional.get());
+        return "redirect:/home";
     }
 }
