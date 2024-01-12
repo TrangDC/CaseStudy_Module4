@@ -24,7 +24,7 @@ public class Game {
     private Long quantity;
     private String releaseDate;
     private String platform;
-    private Long rating;
+    private Double rating;
     private boolean isActive;
     private String image;
     private String imageDetail;
