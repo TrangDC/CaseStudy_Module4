@@ -100,7 +100,10 @@
             </form>
         </div>
         <div class="col-lg-3 col-6 text-right">
-            <a href="" class="btn border">
+
+<!--            Nút dẫn tới trang shopping -cart-->
+            <a href="/shopping-cart" class="btn border">
+
                 <i class="fas fa-shopping-cart text-primary"></i>
                 <span class="badge">0</span>
             </a>
@@ -173,7 +176,7 @@
                     <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                         <h6 class="text-truncate mb-3" th:text="${game.name}"></h6>
                         <div class="d-flex justify-content-center">
-                            <h6 th:text="'$' + ${game.price}"></h6>
+                            <h6 th:text="${game.price} + ' VNĐ'"></h6>
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">

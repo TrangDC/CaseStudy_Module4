@@ -91,4 +91,21 @@ public class HomeController {
         cart.addProduct(gameOptional.get());
         return "redirect:/home";
     }
+
+    // xóa số lượng 1 sản phẩm trong trang shopping cart
+    @GetMapping("/sub/{id}")
+    public String subFromCart(@PathVariable Long id,
+                              @ModelAttribute Cart cart,
+                              @RequestParam("action") String action) {
+        Optional<Game> gameOptional = gameService.findById(id);
+        if(!gameOptional.isPresent()) {
+            return "/error_404";
+        }
+        if (action.equals("show")) {
+            cart.subProduct(gameOptional.get());
+            return "redirect:/shopping-cart";
+        }
+        cart.subProduct(gameOptional.get());
+        return "redirect:/api/products";
+    }
 }
