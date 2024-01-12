@@ -14,12 +14,12 @@ public class UserService implements IUserService {
     private IUserRepository iUserRepository;
     @Override
     public Iterable<User> findAll() {
-        return null;
+        return iUserRepository.findAll();
     }
 
     @Override
     public Optional<User> findById(Long id) {
-        return Optional.empty();
+        return iUserRepository.findById(id);
     }
 
     @Override
