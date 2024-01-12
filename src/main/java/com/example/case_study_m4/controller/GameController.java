@@ -31,7 +31,7 @@ public class GameController {
 
     @GetMapping
     public ModelAndView listGames(@RequestParam(defaultValue = "0") int page) {
-        ModelAndView modelAndView = new ModelAndView("//website/home/main");
+        ModelAndView modelAndView = new ModelAndView("/admin/games/list");
 
         PageRequest pageable = PageRequest.of(page, 5);
         Page<Game> games = gameService.findAll(pageable);
@@ -86,7 +86,7 @@ public class GameController {
     @GetMapping("/search")
     public ModelAndView searchGame(@RequestParam("keyword") String keyword,
                                @PageableDefault(size = 4) Pageable pageable) {
-        ModelAndView modelAndView = new ModelAndView("//website/home/main");
+        ModelAndView modelAndView = new ModelAndView("/admin/games/list");
         Page<Game> games = gameService.searchByWord(keyword, pageable);
         modelAndView.addObject("games", games);
         modelAndView.addObject("keyword", keyword);
@@ -96,7 +96,7 @@ public class GameController {
     @GetMapping("/filter")
     public ModelAndView filterGamesByCategory(@RequestParam("id") Long id,
                                               @PageableDefault(size = 5) Pageable pageable) {
-        ModelAndView modelAndView = new ModelAndView("//website/home/main");
+        ModelAndView modelAndView = new ModelAndView("/admin/games/list");
 
         Optional<Category> category = categoryService.findById(id);
         if (category.isPresent()) {
