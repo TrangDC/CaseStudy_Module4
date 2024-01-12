@@ -4,12 +4,15 @@ import com.example.case_study_m4.model.Category;
 import com.example.case_study_m4.model.Game;
 import com.example.case_study_m4.service.ICategoryService;
 import com.example.case_study_m4.service.IGameService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -48,13 +51,32 @@ public class GameController {
     }
 
     @PostMapping("/create")
-    public ModelAndView saveGame(@ModelAttribute("products") Game game) {
-        gameService.save(game);
+    public ModelAndView saveGame(@Valid @ModelAttribute("game") Game game,
+                                 BindingResult bindingResult) {
         ModelAndView modelAndView = new ModelAndView("/admin/games/form");
+
+        // Kiểm tra xem người dùng có nhập dữ liệu không
+        if (game.getName() == null || game.getName().isEmpty()) {
+            modelAndView.addObject("message", "Vui lòng nhập dữ liệu game");
+            return modelAndView;
+        }
+
+        // Kiểm tra lỗi validation
+        if (bindingResult.hasErrors()) {
+            // Nếu có lỗi validation, trả về thông báo và không lưu game
+            modelAndView.addObject("message", "Có lỗi xảy ra, vui lòng kiểm tra lại thông tin");
+            return modelAndView;
+        }
+
+        // Xử lý logic khi không có lỗi
+        gameService.save(game);
+
+        // Thiết lập lại trang thêm mới với thông báo thành công và đối tượng game mới
         modelAndView.addObject("game", new Game());
         modelAndView.addObject("message", "New game created successfully");
         return modelAndView;
     }
+
 
     @GetMapping("/update/{id}")
     public ModelAndView showEditForm(@PathVariable Long id) {
@@ -70,14 +92,22 @@ public class GameController {
 
     @PostMapping("/update/{id}")
     public String updateGame(@PathVariable Long id,
-                                       @ModelAttribute("product") Game game) {
+                             @Valid @ModelAttribute("game") Game game,
+                             BindingResult bindingResult) {
         Optional<Game> detail = gameService.findById(id);
-        if(detail != null){
+
+        if (detail.isPresent()) {
+            if (bindingResult.hasErrors()) {
+                // Nếu có lỗi validation, trả về trang form với thông báo lỗi và giữ lại dữ liệu đã nhập
+                return "/admin/games/form";
+            }
+
             game.setId(id);
             gameService.save(game);
         }
         return "redirect:/games";
     }
+
     @GetMapping("/delete/{id}")
     public String deleteGame(@PathVariable Long id) {
            gameService.remove(id);
