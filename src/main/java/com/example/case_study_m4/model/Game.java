@@ -1,9 +1,9 @@
 package com.example.case_study_m4.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "games")
@@ -13,19 +13,41 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty
-    @NotBlank
+    @NotBlank(message = "Name is required")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @NotEmpty
-    @NotBlank
+    @NotBlank(message = "Description is required")
+    @Column(name = "description", nullable = false)
     private String description;
+
+
+    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price must be greater than or equal to 0")
     private Long price;
+
+
+    @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be greater than or equal to 1")
+    @Max(value = 100, message = "Quantity must be less than or equal to 100")
     private Long quantity;
+
+    @NotBlank(message = "Release Date is required")
+    @Column(name = "releaseDate", nullable = false)
     private String releaseDate;
+
+    @NotBlank(message = "Platform is required")
+    @Column(name = "platform", nullable = false)
     private String platform;
-    private Long rating;
+
+    @NotNull(message = "Rating is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Rating must be greater than or equal to 0.0")
+    @DecimalMax(value = "10.0", inclusive = false, message = "Rating must be less than or equal to 10.0")
+    private Double rating;
+
+    @ColumnDefault("true")
     private boolean isActive;
+
     private String image;
     private String imageDetail;
 
