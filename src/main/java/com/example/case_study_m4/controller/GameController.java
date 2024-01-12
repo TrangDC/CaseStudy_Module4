@@ -31,7 +31,7 @@ public class GameController {
 
     @GetMapping
     public ModelAndView listGames(@RequestParam(defaultValue = "0") int page) {
-        ModelAndView modelAndView = new ModelAndView("//website/home/main");
+        ModelAndView modelAndView = new ModelAndView("/admin/games/list");
 
         PageRequest pageable = PageRequest.of(page, 5);
         Page<Game> games = gameService.findAll(pageable);

@@ -9,4 +9,6 @@ public interface IGenerateService<T> {
 
     void save(T t);
 
+    void remove(Long id);
+
 }
