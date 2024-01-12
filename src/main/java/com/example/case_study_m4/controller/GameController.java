@@ -92,14 +92,22 @@ public class GameController {
 
     @PostMapping("/update/{id}")
     public String updateGame(@PathVariable Long id,
-                                       @ModelAttribute("product") Game game) {
+                             @Valid @ModelAttribute("game") Game game,
+                             BindingResult bindingResult) {
         Optional<Game> detail = gameService.findById(id);
-        if(detail != null){
+
+        if (detail.isPresent()) {
+            if (bindingResult.hasErrors()) {
+                // Nếu có lỗi validation, trả về trang form với thông báo lỗi và giữ lại dữ liệu đã nhập
+                return "/admin/games/form";
+            }
+
             game.setId(id);
             gameService.save(game);
         }
         return "redirect:/games";
     }
+
     @GetMapping("/delete/{id}")
     public String deleteGame(@PathVariable Long id) {
            gameService.remove(id);
