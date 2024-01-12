@@ -25,7 +25,7 @@
     <div class="mb-3">
         <label for="categories" class="form-label">Category</label>
         <select class="form-select" id="categories" th:field="*{category}">
-            <option value="">-- Select a classroom --</option>
+            <option value="">-- Select a category --</option>
             <option th:each="c : ${categories}"
                     th:value="${c.id}" th:text="${c.name}"></option>
         </select></div>
