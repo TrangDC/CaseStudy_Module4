@@ -118,19 +118,8 @@ public class OrderController {
             order.setPayment_method(paymentMethod);
 
             // trừ tiền trong tài khoản nếu chọn thanh toán bằng account
-            if (paymentMethod.equals("Account")) {
-                // Kiểm tra xem balance có đủ để thanh toán không
-                if (user.get().getBalance() >= order.getTotalPrice()) {
-                    // Trừ tiền từ balance và cập nhật thông tin đơn hàng
-                    user.get().setBalance((long) (user.get().getBalance() - order.getTotalPrice()));
-                    iUserService.save(user.get());
-                } else {
-                    // Nếu balance không đủ, có thể xử lý theo ý bạn, ví dụ, hiển thị thông báo lỗi.
-                    ModelAndView errorModelAndView = new ModelAndView("website/order_payment/order");
-                    errorModelAndView.addObject("message", "Tài khoản của bạn không đủ để thanh toán.");
-                    return errorModelAndView;
-                }
-            }
+            ModelAndView errorModelAndView = check_balance_if_user_choose_account_payment(paymentMethod, user, order);
+            if (errorModelAndView != null) return errorModelAndView;
 
             iorderService.save(order);
 
@@ -157,5 +146,22 @@ public class OrderController {
             return modelAndView;
         }
         return new ModelAndView("/error_404");
+    }
+
+    private ModelAndView check_balance_if_user_choose_account_payment(String paymentMethod, Optional<User> user, Order order) {
+        if (paymentMethod.equals("Account")) {
+            // Kiểm tra xem balance có đủ để thanh toán không
+            if (user.get().getBalance() >= order.getTotalPrice()) {
+                // Trừ tiền từ balance và cập nhật thông tin đơn hàng
+                user.get().setBalance((long) (user.get().getBalance() - order.getTotalPrice()));
+                iUserService.save(user.get());
+            } else {
+                // Nếu balance không đủ, có thể xử lý theo ý bạn, ví dụ, hiển thị thông báo lỗi.
+                ModelAndView errorModelAndView = new ModelAndView("website/order_payment/order");
+                errorModelAndView.addObject("message", "Tài khoản của bạn không đủ để thanh toán.");
+                return errorModelAndView;
+            }
+        }
+        return null;
     }
 }
