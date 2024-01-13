@@ -55,6 +55,16 @@ public class OrderController {
 
         //Kiểm tra số lượng sản phẩm trong shop trước khi check đơn
         // Duyệt qua danh sách sản phẩm trong giỏ hàng
+        ModelAndView modelAndView1 = checkQuantityFromShopData(cart);
+        if (modelAndView1 != null) return modelAndView1;
+
+        modelAndView = new ModelAndView("website/order_payment/order");
+        modelAndView.addObject("cart", cart);
+        return modelAndView;
+    }
+
+    private ModelAndView checkQuantityFromShopData(Cart cart) {
+        ModelAndView modelAndView;
         for (Map.Entry<Game, Integer> entry : cart.getGames().entrySet()) {
             Game game = entry.getKey();
             Integer cartQuantity = entry.getValue();
@@ -75,10 +85,7 @@ public class OrderController {
                 }
             }
         }
-
-        modelAndView = new ModelAndView("website/order_payment/order");
-        modelAndView.addObject("cart", cart);
-        return modelAndView;
+        return null;
     }
 
     @PostMapping("/place-order")
@@ -96,26 +103,8 @@ public class OrderController {
 
             //Kiểm tra lần cuối số lượng game trong shop trước khi thanh toán
             // Duyệt qua danh sách sản phẩm trong giỏ hàng
-            for (Map.Entry<Game, Integer> entry : cart.getGames().entrySet()) {
-                Game game = entry.getKey();
-                Integer cartQuantity = entry.getValue();
-
-                // lấy game từ CSDL để cập nhật dữ liệu
-                Optional<Game> actualGameOptional = iGameService.findById(game.getId());
-                if (actualGameOptional.isPresent()) {
-                    Game actualGame = actualGameOptional.get();
-
-                    // So sánh số lượng trong giỏ hàng với số lượng có sẵn trong cửa hàng
-                    if (cartQuantity > actualGame.getQuantity()) {
-                        System.out.println(cartQuantity);
-                        System.out.println(actualGame.getQuantity());
-                        // Nếu số lượng vượt quá, trả về trang cart và hiển thị thông báo lỗi
-                        modelAndView = new ModelAndView("website/shopping_cart/list");
-                        modelAndView.addObject("error", "Game '" + game.getName() + "' mà bạn đặt vượt quá số lượng có sẵn trong cửa hàng.");
-                        return modelAndView;
-                    }
-                }
-            }
+            ModelAndView modelAndView1 = checkQuantityFromShopData(cart);
+            if (modelAndView1 != null) return modelAndView1;
 
             //Tạo đơn hàng cho user
             Order order = new Order();
