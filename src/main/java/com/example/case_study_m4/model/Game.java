@@ -28,7 +28,7 @@ public class Game {
 
 
     @NotNull(message = "Quantity is required")
-    @Min(value = 1, message = "Quantity must be greater than or equal to 1")
+    @Min(value = 0, message = "Quantity must be greater than or equal to 0")
     @Max(value = 100, message = "Quantity must be less than or equal to 100")
     private Long quantity;
 
