@@ -50,10 +50,42 @@ public class OrderController {
 
     @GetMapping("/order-summary")
     public ModelAndView showOrderSummary(@ModelAttribute("cart") Cart cart) {
-        ModelAndView modelAndView = new ModelAndView("website/order_payment/order");
+        ModelAndView modelAndView;
 
+
+        //Kiểm tra số lượng sản phẩm trong shop trước khi check đơn
+        // Duyệt qua danh sách sản phẩm trong giỏ hàng
+        ModelAndView modelAndView1 = checkQuantityFromShopData(cart);
+        if (modelAndView1 != null) return modelAndView1;
+
+        modelAndView = new ModelAndView("website/order_payment/order");
         modelAndView.addObject("cart", cart);
         return modelAndView;
+    }
+
+    private ModelAndView checkQuantityFromShopData(Cart cart) {
+        ModelAndView modelAndView;
+        for (Map.Entry<Game, Integer> entry : cart.getGames().entrySet()) {
+            Game game = entry.getKey();
+            Integer cartQuantity = entry.getValue();
+
+            // lấy game từ CSDL để cập nhật dữ liệu
+            Optional<Game> actualGameOptional = iGameService.findById(game.getId());
+            if (actualGameOptional.isPresent()) {
+                Game actualGame = actualGameOptional.get();
+
+                // So sánh số lượng trong giỏ hàng với số lượng có sẵn trong cửa hàng
+                if (cartQuantity > actualGame.getQuantity()) {
+                    System.out.println(cartQuantity);
+                    System.out.println(actualGame.getQuantity());
+                    // Nếu số lượng vượt quá, trả về trang cart và hiển thị thông báo lỗi
+                    modelAndView = new ModelAndView("website/shopping_cart/list");
+                    modelAndView.addObject("error", "Game '" + game.getName() + "' mà bạn đặt vượt quá số lượng có sẵn trong cửa hàng.");
+                    return modelAndView;
+                }
+            }
+        }
+        return null;
     }
 
     @PostMapping("/place-order")
@@ -62,11 +94,17 @@ public class OrderController {
                                 @RequestParam("shippingAddress") String shippingAddress,
                                 @RequestParam("paymentMethod") String paymentMethod) {
 
+        ModelAndView modelAndView = new ModelAndView();
+
         //giả sử một user mặc định. User sẽ lấy qua userid từ session
         Optional<User> user = iUserService.findById(Long.valueOf(3));
 
-        System.out.println(user);
         if (user.isPresent()) {
+
+            //Kiểm tra lần cuối số lượng game trong shop trước khi thanh toán
+            // Duyệt qua danh sách sản phẩm trong giỏ hàng
+            ModelAndView modelAndView1 = checkQuantityFromShopData(cart);
+            if (modelAndView1 != null) return modelAndView1;
 
             //Tạo đơn hàng cho user
             Order order = new Order();
@@ -78,6 +116,21 @@ public class OrderController {
             order.setStatus("Started");
             order.setTotalPrice(cart.countTotalPayment());
             order.setPayment_method(paymentMethod);
+
+            // trừ tiền trong tài khoản nếu chọn thanh toán bằng account
+            if (paymentMethod.equals("Account")) {
+                // Kiểm tra xem balance có đủ để thanh toán không
+                if (user.get().getBalance() >= order.getTotalPrice()) {
+                    // Trừ tiền từ balance và cập nhật thông tin đơn hàng
+                    user.get().setBalance((long) (user.get().getBalance() - order.getTotalPrice()));
+                    iUserService.save(user.get());
+                } else {
+                    // Nếu balance không đủ, có thể xử lý theo ý bạn, ví dụ, hiển thị thông báo lỗi.
+                    ModelAndView errorModelAndView = new ModelAndView("website/order_payment/order");
+                    errorModelAndView.addObject("message", "Tài khoản của bạn không đủ để thanh toán.");
+                    return errorModelAndView;
+                }
+            }
 
             iorderService.save(order);
 
@@ -100,7 +153,7 @@ public class OrderController {
             }
             //xóa giỏ hàng
             cart.deleteAllFromCart();
-            ModelAndView modelAndView = new ModelAndView("website/order_payment/success_payment");
+            modelAndView = new ModelAndView("website/order_payment/success_payment");
             return modelAndView;
         }
         return new ModelAndView("/error_404");

@@ -9,6 +9,9 @@
 <p>
     <a href="/home" class="btn btn-primary">Homepage</a>
 </p>
+
+<h6 th:if="${error}" th:text="${error}"></h6>
+
 <h1>Your Cart</h1>
 <a th:href="@{/shopping-cart/deleteAll}" th:if="${cart.countItemQuantity() > 0}" class="btn btn-danger">Delete All</a>
 <form th:object="${cart}" method="post">
