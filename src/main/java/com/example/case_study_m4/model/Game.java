@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "games")
@@ -28,7 +29,7 @@ public class Game {
 
 
     @NotNull(message = "Quantity is required")
-    @Min(value = 1, message = "Quantity must be greater than or equal to 1")
+    @Min(value = 0, message = "Quantity must be greater than or equal to 1")
     @Max(value = 100, message = "Quantity must be less than or equal to 100")
     private Long quantity;
 
@@ -49,6 +50,7 @@ public class Game {
     private boolean isActive;
 
     private String image;
+
     private String imageDetail;
 
     @ManyToOne
