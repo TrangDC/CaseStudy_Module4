@@ -1,37 +1,51 @@
 package com.example.case_study_m4.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable=false)
     private String name;
+
+    @Column(nullable=false)
     private String gender;
-    private Long balance;
-    private String address;
+
+    @Column(nullable=false)
+    private Long balance = 0L;
+
+    @Column(nullable=false)
     private String username;
+
+    @Column(nullable=false)
     private String password;
+
+    @Column(nullable=false, unique=true)
     private String email;
-    private boolean isActive;
 
+    private boolean isActive = true;
 
-    public User(String name, String gender, String address, String username, String password, String email) {
-        this.name = name;
-        this.gender = gender;
-        this.address = address;
-        this.balance = 0L;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.isActive = true;
-    }
+    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @JoinTable(
+            name="users_roles",
+            joinColumns={@JoinColumn(name="USER_ID", referencedColumnName="ID")},
+            inverseJoinColumns={@JoinColumn(name="ROLE_ID", referencedColumnName="ID")})
+    private List<Role> roles = new ArrayList<>();
 }
