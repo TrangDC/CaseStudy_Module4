@@ -23,4 +23,15 @@ public class User {
     private String email;
     private boolean isActive;
 
+
+    public User(String name, String gender, String address, String username, String password, String email) {
+        this.name = name;
+        this.gender = gender;
+        this.address = address;
+        this.balance = 0L;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.isActive = true;
+    }
 }
