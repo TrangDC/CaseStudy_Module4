@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "games")
@@ -49,6 +50,7 @@ public class Game {
     private boolean isActive;
 
     private String image;
+
     private String imageDetail;
 
     @ManyToOne

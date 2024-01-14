@@ -4,16 +4,19 @@ import com.example.case_study_m4.model.Category;
 import com.example.case_study_m4.model.Game;
 import com.example.case_study_m4.service.ICategoryService;
 import com.example.case_study_m4.service.IGameService;
+import com.example.case_study_m4.service.IGameUpFileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Optional;
@@ -26,6 +29,9 @@ public class GameController {
 
     @Autowired
     private ICategoryService categoryService;
+
+    @Value("$={file-upload}")
+    private String upload;
 
     @ModelAttribute("categories")
     public Iterable<Category> listCategories() {
@@ -57,10 +63,9 @@ public class GameController {
 
         // Kiểm tra xem người dùng có nhập dữ liệu không
         if (game.getName() == null || game.getName().isEmpty()) {
-            modelAndView.addObject("message", "Vui lòng nhập dữ liệu game");
+            modelAndView.addObject("message", "Vui lòng nhập tên game");
             return modelAndView;
         }
-
         // Kiểm tra lỗi validation
         if (bindingResult.hasErrors()) {
             // Nếu có lỗi validation, trả về thông báo và không lưu game
@@ -76,7 +81,6 @@ public class GameController {
         modelAndView.addObject("message", "New game created successfully");
         return modelAndView;
     }
-
 
     @GetMapping("/update/{id}")
     public ModelAndView showEditForm(@PathVariable Long id) {

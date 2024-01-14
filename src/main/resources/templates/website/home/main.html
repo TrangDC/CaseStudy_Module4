@@ -152,7 +152,7 @@
                 </div>
             </nav>
 
-            <img src="../image/icon.png" height="500" width="1000"/>
+            <img src="../image/icon.png" height="350" width="1000"/>
 
         </div>
     </div>
@@ -170,7 +170,13 @@
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="card product-item border-0 mb-4">
                     <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                        <img class="img-fluid w-100" th:src="${game.image}" alt="Game Image">
+<!--                        <img class="img-fluid w-100" th:src="@{'/image/' + ${game.image}}" alt="">-->
+                        <img class="img-fluid w-100"
+                             th:if="${game.image == null or game.image == ''}"
+                             th:src="@{'/image/No image.jpg'}" alt="Default Image" />
+                        <img class="img-fluid w-100"
+                             th:unless="${game.image == null or game.image == ''}"
+                             th:src="@{'/image/' + ${game.image}}" alt=""/>
                     </div>
                     <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                         <h6 class="text-truncate mb-3" th:text="${game.name}"></h6>
