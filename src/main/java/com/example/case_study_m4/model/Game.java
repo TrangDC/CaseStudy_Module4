@@ -47,7 +47,7 @@ public class Game {
     private Double rating;
 
     @ColumnDefault("true")
-    private boolean isActive;
+    private boolean isActive = true;
 
     private String image;
 

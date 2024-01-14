@@ -20,7 +20,7 @@ public class GameUpFile {
     private String platform;
     private String releaseDate;
     private String description;
-    private boolean isActive;
+    private boolean isActive = true;
 
     @Transient
     private MultipartFile file;

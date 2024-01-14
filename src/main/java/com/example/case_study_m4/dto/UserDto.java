@@ -27,6 +27,7 @@ public class UserDto
     @Column(nullable=false)
     private Long balance = 0L;
 
+
     @NotEmpty(message = "Username should not be empty")
     private String username;
 

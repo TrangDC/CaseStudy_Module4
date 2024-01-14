@@ -29,11 +29,12 @@ public class SpringSecurity {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/register/**").permitAll()
-                                .requestMatchers("/index").hasAnyRole("ADMIN", "USER")
-                                .requestMatchers("/users").hasAnyRole("ADMIN")
-                                .requestMatchers("/users").hasRole("ADMIN")
                                 .requestMatchers("/home/**").permitAll()
-                                .requestMatchers("/shopping-cart").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers("/index").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers("/users/**").hasRole("ADMIN")
+                                .requestMatchers("/games/**").hasRole("ADMIN")
+                                .requestMatchers("/shopping-cart/**").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers("/checkout/**").hasAnyRole("ADMIN", "USER")
                 ).formLogin(
                         form -> form
                                 .loginPage("/login")
