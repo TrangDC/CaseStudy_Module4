@@ -98,6 +98,29 @@
                 </div>
             </form>
         </div>
+
+        <div>
+            <div th:if="${not #authorization.expression('isAuthenticated()')}">
+                <a th:href="@{/login}">Đăng nhập</a>
+                <a th:href="@{/register}">Đăng ký</a>
+            </div>
+
+            <!-- Hiển thị thông tin user nếu đăng nhập với vai trò user -->
+            <div th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
+                <span>Chào mừng, <span th:text="${user.username}"></span>!</span>
+                <a th:href="@{/logout}">Đăng xuất</a>
+                <a th:href="@{/logout}">Thông tin user</a>
+            </div>
+
+            <!-- Hiển thị thông tin admin nếu đăng nhập với vai trò admin -->
+            <div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                <span>Chào mừng, admin!</span>
+                <a th:href="@{/logout}">Thông tin admin</a>
+                <a th:href="@{/logout}">Đăng xuất</a>
+            </div>
+        </div>
+
+
         <div class="col-lg-3 col-6 text-right">
 
 <!--            Nút dẫn tới trang shopping -cart-->

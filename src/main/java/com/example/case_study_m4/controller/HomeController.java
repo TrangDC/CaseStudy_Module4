@@ -3,8 +3,11 @@ package com.example.case_study_m4.controller;
 import com.example.case_study_m4.model.Cart;
 import com.example.case_study_m4.model.Category;
 import com.example.case_study_m4.model.Game;
+import com.example.case_study_m4.model.User;
 import com.example.case_study_m4.service.ICategoryService;
 import com.example.case_study_m4.service.IGameService;
+import com.example.case_study_m4.service.IUserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @Controller
@@ -31,6 +35,9 @@ public class HomeController {
     @Autowired
     private ICategoryService categoryService;
 
+    @Autowired
+    private IUserService userService;
+
     @ModelAttribute("categories")
     public Iterable<Category> listCategories() {
         return categoryService.findAll();
@@ -42,9 +49,15 @@ public class HomeController {
     }
 
     @GetMapping
-    public ModelAndView listGames(@RequestParam(defaultValue = "0") int page) {
+    public ModelAndView listGames(@RequestParam(defaultValue = "0") int page,
+                                  Principal principal) {
         ModelAndView modelAndView = new ModelAndView("website/home/main");
 
+        if (principal != null) {
+            String email = principal.getName();
+            User user = userService.findUserByEmail(email);
+            modelAndView.addObject("user", user);
+        }
 
         PageRequest pageable = PageRequest.of(page, 8);
         Page<Game> games = gameService.findAll(pageable);
