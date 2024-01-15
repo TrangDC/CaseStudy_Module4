@@ -17,7 +17,6 @@ public class User {
     private String name;
     private String gender;
     private Long balance;
-    private String address;
     private String username;
     private String password;
     private String email;
