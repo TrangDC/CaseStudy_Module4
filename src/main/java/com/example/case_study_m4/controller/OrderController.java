@@ -7,6 +7,9 @@ import com.example.case_study_m4.service.IOrderService;
 import com.example.case_study_m4.service.IUserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -96,65 +99,76 @@ public class OrderController {
 
         ModelAndView modelAndView = new ModelAndView();
 
-        //giả sử một user mặc định. User sẽ lấy qua userid từ session
-        Optional<User> user = iUserService.findById(Long.valueOf(3));
+        // Lấy thông tin user từ SecurityContextHolder
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (user.isPresent()) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
 
-            //Kiểm tra lần cuối số lượng game trong shop trước khi thanh toán
-            // Duyệt qua danh sách sản phẩm trong giỏ hàng
-            ModelAndView modelAndView1 = checkQuantityFromShopData(cart);
-            if (modelAndView1 != null) return modelAndView1;
+            if (principal instanceof UserDetails) {
+                // Lấy thông tin từ UserDetails
+                String email = ((UserDetails) principal).getUsername();
 
-            //Tạo đơn hàng cho user
-            Order order = new Order();
+                User userLogin = iUserService.findUserByEmail(email);
 
-            order.setUser(user.get());
-            order.setPhoneNumber(phoneNumber);
-            order.setDeliveryAddress(shippingAddress);
-            order.setOrderDate(new Timestamp(System.currentTimeMillis()));
-            order.setStatus("Started");
-            order.setTotalPrice(cart.countTotalPayment());
-            order.setPayment_method(paymentMethod);
+                if (userLogin != null) {
 
-            // trừ tiền trong tài khoản nếu chọn thanh toán bằng account
-            ModelAndView errorModelAndView = check_balance_if_user_choose_account_payment(paymentMethod, user, order);
-            if (errorModelAndView != null) return errorModelAndView;
+                    // Kiểm tra lần cuối số lượng game trong shop trước khi thanh toán
+                    // Duyệt qua danh sách sản phẩm trong giỏ hàng
+                    ModelAndView modelAndView1 = checkQuantityFromShopData(cart);
+                    if (modelAndView1 != null) return modelAndView1;
 
-            iorderService.save(order);
+                    //Tạo đơn hàng cho user
+                    Order order = new Order();
 
-            // Lấy danh sách products từ cart, cho vào orderdetail
-            Map<Game, Integer> games = cart.getGames();
-            for (Map.Entry<Game, Integer> entry : games.entrySet()) {
-                Game game = entry.getKey();
-                Long quantity = Long.valueOf(entry.getValue());
+                    order.setUser(userLogin);
+                    order.setPhoneNumber(phoneNumber);
+                    order.setDeliveryAddress(shippingAddress);
+                    order.setOrderDate(new Timestamp(System.currentTimeMillis()));
+                    order.setStatus("Started");
+                    order.setTotalPrice(cart.countTotalPayment());
+                    order.setPayment_method(paymentMethod);
 
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setOrder(order);
-                orderDetail.setGame(game);
-                orderDetail.setQuantity(quantity);
-                orderDetail.setPrice((double) (game.getPrice() * quantity));
-                iOrderDetailService.save(orderDetail);
+                    // trừ tiền trong tài khoản nếu chọn thanh toán bằng account
+                    ModelAndView errorModelAndView = check_balance_if_user_choose_account_payment(paymentMethod, userLogin, order);
+                    if (errorModelAndView != null) return errorModelAndView;
 
-                // trừ đi số lượng sản phẩm
-                game.setQuantity(game.getQuantity() - quantity);
-                iGameService.save(game);
+                    iorderService.save(order);
+
+                    // Lấy danh sách products từ cart, cho vào orderdetail
+                    Map<Game, Integer> games = cart.getGames();
+                    for (Map.Entry<Game, Integer> entry : games.entrySet()) {
+                        Game game = entry.getKey();
+                        Long quantity = Long.valueOf(entry.getValue());
+
+                        OrderDetail orderDetail = new OrderDetail();
+                        orderDetail.setOrder(order);
+                        orderDetail.setGame(game);
+                        orderDetail.setQuantity(quantity);
+                        orderDetail.setPrice((double) (game.getPrice() * quantity));
+                        iOrderDetailService.save(orderDetail);
+
+                        // Trừ đi số lượng sản phẩm
+                        game.setQuantity(game.getQuantity() - quantity);
+                        iGameService.save(game);
+                    }
+                    // Xóa giỏ hàng
+                    cart.deleteAllFromCart();
+                    modelAndView = new ModelAndView("website/order_payment/success_payment");
+                    return modelAndView;
+                }
+                return new ModelAndView("/error_404");
             }
-            //xóa giỏ hàng
-            cart.deleteAllFromCart();
-            modelAndView = new ModelAndView("website/order_payment/success_payment");
-            return modelAndView;
-        }
-        return new ModelAndView("/error_404");
+        } return null;
     }
 
-    private ModelAndView check_balance_if_user_choose_account_payment(String paymentMethod, Optional<User> user, Order order) {
+    private ModelAndView check_balance_if_user_choose_account_payment(String paymentMethod, User user, Order order) {
         if (paymentMethod.equals("Account")) {
             // Kiểm tra xem balance có đủ để thanh toán không
-            if (user.get().getBalance() >= order.getTotalPrice()) {
+            if (user.getBalance() >= order.getTotalPrice()) {
                 // Trừ tiền từ balance và cập nhật thông tin đơn hàng
-                user.get().setBalance((long) (user.get().getBalance() - order.getTotalPrice()));
-                iUserService.save(user.get());
+                user.setBalance((long) (user.getBalance() - order.getTotalPrice()));
+                iUserService.save(user);
             } else {
                 // Nếu balance không đủ, có thể xử lý theo ý bạn, ví dụ, hiển thị thông báo lỗi.
                 ModelAndView errorModelAndView = new ModelAndView("website/order_payment/order");
