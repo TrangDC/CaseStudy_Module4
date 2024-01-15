@@ -4,7 +4,6 @@ import com.example.case_study_m4.model.Category;
 import com.example.case_study_m4.model.Game;
 import com.example.case_study_m4.service.ICategoryService;
 import com.example.case_study_m4.service.IGameService;
-import com.example.case_study_m4.service.IGameUpFileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,11 +13,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 
+import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 @Controller
@@ -42,7 +45,7 @@ public class GameController {
     public ModelAndView listGames(@RequestParam(defaultValue = "0") int page) {
         ModelAndView modelAndView = new ModelAndView("/admin/games/list");
 
-        PageRequest pageable = PageRequest.of(page, 5);
+        PageRequest pageable = PageRequest.of(page, 8);
         Page<Game> games = gameService.findAll(pageable);
 
         modelAndView.addObject("games", games);
@@ -60,6 +63,7 @@ public class GameController {
     public ModelAndView saveGame(@Valid @ModelAttribute("game") Game game,
                                  BindingResult bindingResult) {
         ModelAndView modelAndView = new ModelAndView("/admin/games/form");
+        MultipartFile file = game.getFile();
 
         // Kiểm tra xem người dùng có nhập dữ liệu không
         if (game.getName() == null || game.getName().isEmpty()) {
@@ -73,6 +77,21 @@ public class GameController {
             return modelAndView;
         }
 
+        if (file != null && file.getSize() != 0) {
+            String fileName = file.getOriginalFilename();
+            try {
+                FileCopyUtils.copy(file.getBytes(), new File(upload + fileName));
+                game.setImage(fileName);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } else if (game.getId() == null) {
+            game.setImage("No image.jpg");
+        } else {
+            game.setImage(gameService.findById(game.getId()).get().getImage());
+        }
+
+
         // Xử lý logic khi không có lỗi
         gameService.save(game);
 
@@ -81,6 +100,67 @@ public class GameController {
         modelAndView.addObject("message", "New game created successfully");
         return modelAndView;
     }
+
+//    @PostMapping("/create")
+//    public String saveGame(@Valid @ModelAttribute("game") Game game,
+//                           BindingResult bindingResult,
+//                           @RequestParam("file") MultipartFile file,
+//                           RedirectAttributes redirectAttributes) {
+//
+//        // Kiểm tra xem người dùng có nhập dữ liệu không
+//        if (game.getName() == null || game.getName().isEmpty()) {
+//            redirectAttributes.addFlashAttribute("message", "Vui lòng nhập tên game");
+//            return "redirect:/admin/games/form";
+//        }
+//
+//        // Kiểm tra lỗi validation
+//        if (bindingResult.hasErrors()) {
+//            // Nếu có lỗi validation, trả về thông báo và không lưu game
+//            redirectAttributes.addFlashAttribute("message", "Có lỗi xảy ra, vui lòng kiểm tra lại thông tin");
+//            return "redirect:/admin/games/form";
+//        }
+//
+//        try {
+//            // Xử lý logic khi không có lỗi
+//            if (file != null && !file.isEmpty()) {
+//                String fileName = file.getOriginalFilename();
+//                FileCopyUtils.copy(file.getBytes(), new File(upload + fileName));
+//                game.setImage(fileName);
+//            }
+//
+//            gameService.save(game);
+//
+//            // Thiết lập lại trang thêm mới với thông báo thành công và đối tượng game mới
+//            redirectAttributes.addFlashAttribute("game", new Game());
+//            redirectAttributes.addFlashAttribute("message", "New game created successfully");
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//            redirectAttributes.addFlashAttribute("message", "Có lỗi xảy ra, vui lòng thử lại");
+//        }
+//
+//        return "redirect:/admin/games/form";
+//    }
+
+//    @PostMapping("/create")
+//    public String save(@ModelAttribute Game game) {
+//        MultipartFile file = game.getFile();
+//        if (file.getSize() != 0) {
+//            String fileName = file.getOriginalFilename();
+//            try {
+//                FileCopyUtils.copy(file.getBytes(), new File(upload + fileName));
+//                game.setImage(fileName);
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            }
+//        } else if (game.getId() == null) {
+//            game.setImage("No image.jpg");
+//        } else {
+//            game.setImage(gameService.findById(game.getId()).get().getImage());
+//        }
+//        System.out.println(file.getOriginalFilename());
+//        gameService.save(game);
+//        return "redirect:/games";
+//    }
 
     @GetMapping("/update/{id}")
     public ModelAndView showEditForm(@PathVariable Long id) {
@@ -118,18 +198,32 @@ public class GameController {
            return "redirect:/games";
     }
     @GetMapping("/search")
-    public ModelAndView searchGame(@RequestParam("keyword") String keyword,
-                               @PageableDefault(size = 4) Pageable pageable) {
+    public ModelAndView searchGame(@RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,
+                                   @PageableDefault(size = 8) Pageable pageable,
+                                   Model model) {
         ModelAndView modelAndView = new ModelAndView("/admin/games/list");
-        Page<Game> games = gameService.searchByWord(keyword, pageable);
+
+        Page<Game> games;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            games = gameService.searchByWord(keyword, pageable);
+        } else {
+            games = gameService.findAll(pageable);
+        }
+
         modelAndView.addObject("games", games);
         modelAndView.addObject("keyword", keyword);
+
+        // Truyền thông tin tìm kiếm vào Model để giữ giá trị trên URL
+        model.addAttribute("keyword", keyword);
+
         return modelAndView;
     }
 
+
     @GetMapping("/filter")
     public ModelAndView filterGamesByCategory(@RequestParam("id") Long id,
-                                              @PageableDefault(size = 5) Pageable pageable) {
+                                              @PageableDefault(size = 8) Pageable pageable) {
         ModelAndView modelAndView = new ModelAndView("/admin/games/list");
 
         Optional<Category> category = categoryService.findById(id);
@@ -143,4 +237,5 @@ public class GameController {
         }
         return modelAndView;
     }
+
 }
