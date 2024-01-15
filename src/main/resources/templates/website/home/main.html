@@ -54,8 +54,6 @@
                 <span class="text-muted px-2">|</span>
                 <a class="text-dark" href="">Support</a>
             </div>
-        </div>
-        <div class="col-lg-2 text-center">
             <div class="d-inline-flex align-items-right ml-auto">
                 <a class="text-dark px-2" href="">
                     <i class="fab fa-facebook-f"></i>
@@ -180,7 +178,7 @@
             </nav>
 
 
-            <img src="../../../static/image/home background.png" height="400" width="950"/>
+            <img th:src="@{'/image/home background.png'}" alt="Default Image" height="400" width="950"/>
 
         </div>
     </div>
@@ -199,10 +197,10 @@
                 <div class="card product-item border-0 mb-4">
                     <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
 <!--                        <img class="img-fluid w-100" th:src="@{'/image/' + ${game.image}}" alt="">-->
-                        <img class="img-fluid w-100"
+                        <img  style="width: 300px; height: 250px;"
                              th:if="${game.image == null or game.image == ''}"
                              th:src="@{'/image/No image.jpg'}" alt="Default Image" />
-                        <img class="img-fluid w-100"
+                        <img  style="width: 300px; height: 250px;"
                              th:unless="${game.image == null or game.image == ''}"
                              th:src="@{'/image/' + ${game.image}}" alt=""/>
                     </div>
@@ -213,7 +211,7 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                        <a href=""th:href="@{/home/gameDetail/__${game.id}__}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
                         <a th:href="@{/home/addToCart/__${game.id}__(action='list')}" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                     </div>
                 </div>
@@ -251,7 +249,7 @@
             <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
         </div>
         <div class="col-lg-8 col-md-12">
-            <img src="../image/icon.png" height="200" width="1000"/></div>
+            <img th:src="@{'/image/background-footer.png'}" alt="" height="340" width="1000"/></div>
     </div>
     <div class="row border-top border-light mx-xl-5 py-4">
         <div class="col-md-6 px-xl-0">
@@ -259,9 +257,6 @@
                 &copy; <a class="text-dark font-weight-semi-bold" href="#">T-Shop.com</a>. All Rights Reserved. Designed
                 by T-Team
             </p>
-        </div>
-        <div class="col-md-6 px-xl-0 text-center text-md-right">
-            <img class="img-fluid" src="img/payments.png" alt="">
         </div>
     </div>
 </div>

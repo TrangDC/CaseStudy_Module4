@@ -128,4 +128,19 @@ public class HomeController {
         cart.subProduct(gameOptional.get());
         return "redirect:/api/products";
     }
+
+    @GetMapping("/gameDetail/{id}")
+    public ModelAndView showGameDetail(@PathVariable Long id) {
+        ModelAndView modelAndView = new ModelAndView("website/home/gameDetail");
+
+        Optional<Game> gameOptional = gameService.findById(id);
+        if (gameOptional.isPresent()) {
+            Game game = gameOptional.get();
+            modelAndView.addObject("game", game);
+        } else {
+            return new ModelAndView("/error_404");
+        }
+
+        return modelAndView;
+    }
 }
