@@ -27,33 +27,33 @@
     </style>
 </head>
 <body>
-<table id="users">
-    <thead>
-    <tr>
-        <th>STT</th>
-        <th>Name</th>
-        <th>Gender</th>
-        <th>Balance</th>
-        <th>User Name</th>
-        <th>Pass Word</th>
-        <th>Email</th>
-        <th colspan="2" style="text-align: center">Is Active</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="p,s : ${users}">
-        <td th:text="${s.count}"></td>
-        <td th:text="${p.getName()}"></td>
-        <td th:text="${p.getGender()}"></td>
-        <td th:text="${(p.getBalance())}"></td>
-        <td th:text="${(p.getUsername())}"></td>
-        <td th:text="${(p.getPassword())}"></td>
-        <td th:text="${(p.getEmail())}"></td>
-        <td th:text="${(p.isActive())}"></td>
-<!--        <td><a th:href="@{/api/users/updateM/{id}(id=${p.getId()})}">Update Money</a></td>-->
-    </tr>
+<h1>User Orders with Details</h1>
 
-    </tbody>
-</table>
+<div th:each="order : ${orders}">
+    <h3 th:text="${'Order ID: ' + order.id}"></h3>
+    <p th:text="${'Order Date: ' + order.orderDate}"></p>
+    <p th:text="${'Phone Number: ' + order.phoneNumber}"></p>
+    <p th:text="${'Delivery Address: ' + order.deliveryAddress}"></p>
+    <p th:text="${'Total Price: ' + order.totalPrice}"></p>
+    <p th:text="${'Payment Method: ' + order.payment_method}"></p>
+    <p th:text="${'Status: ' + order.status}"></p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Game Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="detail : ${order.orderDetails}">
+            <td th:text="${detail.game.name}"></td>
+            <td th:text="${detail.quantity}"></td>
+            <td th:text="${detail.price}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>
