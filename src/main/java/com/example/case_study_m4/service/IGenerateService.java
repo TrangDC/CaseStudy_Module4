@@ -1,5 +1,8 @@
 package com.example.case_study_m4.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 
 public interface IGenerateService<T> {
@@ -10,4 +13,6 @@ public interface IGenerateService<T> {
     void save(T t);
 
     void remove(Long id);
+
+    Page<T> findAllPage(Pageable pageable);
 }
