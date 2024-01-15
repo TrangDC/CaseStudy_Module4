@@ -101,67 +101,6 @@ public class GameController {
         return modelAndView;
     }
 
-//    @PostMapping("/create")
-//    public String saveGame(@Valid @ModelAttribute("game") Game game,
-//                           BindingResult bindingResult,
-//                           @RequestParam("file") MultipartFile file,
-//                           RedirectAttributes redirectAttributes) {
-//
-//        // Kiểm tra xem người dùng có nhập dữ liệu không
-//        if (game.getName() == null || game.getName().isEmpty()) {
-//            redirectAttributes.addFlashAttribute("message", "Vui lòng nhập tên game");
-//            return "redirect:/admin/games/form";
-//        }
-//
-//        // Kiểm tra lỗi validation
-//        if (bindingResult.hasErrors()) {
-//            // Nếu có lỗi validation, trả về thông báo và không lưu game
-//            redirectAttributes.addFlashAttribute("message", "Có lỗi xảy ra, vui lòng kiểm tra lại thông tin");
-//            return "redirect:/admin/games/form";
-//        }
-//
-//        try {
-//            // Xử lý logic khi không có lỗi
-//            if (file != null && !file.isEmpty()) {
-//                String fileName = file.getOriginalFilename();
-//                FileCopyUtils.copy(file.getBytes(), new File(upload + fileName));
-//                game.setImage(fileName);
-//            }
-//
-//            gameService.save(game);
-//
-//            // Thiết lập lại trang thêm mới với thông báo thành công và đối tượng game mới
-//            redirectAttributes.addFlashAttribute("game", new Game());
-//            redirectAttributes.addFlashAttribute("message", "New game created successfully");
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//            redirectAttributes.addFlashAttribute("message", "Có lỗi xảy ra, vui lòng thử lại");
-//        }
-//
-//        return "redirect:/admin/games/form";
-//    }
-
-//    @PostMapping("/create")
-//    public String save(@ModelAttribute Game game) {
-//        MultipartFile file = game.getFile();
-//        if (file.getSize() != 0) {
-//            String fileName = file.getOriginalFilename();
-//            try {
-//                FileCopyUtils.copy(file.getBytes(), new File(upload + fileName));
-//                game.setImage(fileName);
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//            }
-//        } else if (game.getId() == null) {
-//            game.setImage("No image.jpg");
-//        } else {
-//            game.setImage(gameService.findById(game.getId()).get().getImage());
-//        }
-//        System.out.println(file.getOriginalFilename());
-//        gameService.save(game);
-//        return "redirect:/games";
-//    }
-
     @GetMapping("/update/{id}")
     public ModelAndView showEditForm(@PathVariable Long id) {
         Optional<Game> game = gameService.findById(id);
@@ -176,21 +115,38 @@ public class GameController {
 
     @PostMapping("/update/{id}")
     public String updateGame(@PathVariable Long id,
-                             @Valid @ModelAttribute("game") Game game,
+                             @Valid @ModelAttribute("game") Game updatedGame,
                              BindingResult bindingResult) {
-        Optional<Game> detail = gameService.findById(id);
+        Optional<Game> existingGame = gameService.findById(id);
+        MultipartFile file = updatedGame.getFile();
 
-        if (detail.isPresent()) {
+        if (existingGame.isPresent()) {
+            // Kiểm tra lỗi validation
             if (bindingResult.hasErrors()) {
                 // Nếu có lỗi validation, trả về trang form với thông báo lỗi và giữ lại dữ liệu đã nhập
                 return "/admin/games/form";
             }
 
-            game.setId(id);
-            gameService.save(game);
+            // Kiểm tra và xử lý ảnh mới
+            if (file != null && !file.isEmpty()) {
+                String fileName = file.getOriginalFilename();
+                try {
+                    // Lưu ảnh mới vào thư mục upload
+                    FileCopyUtils.copy(file.getBytes(), new File(upload + fileName));
+                    updatedGame.setImage(fileName);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            // Cập nhật thông tin game
+            updatedGame.setId(id);
+            gameService.save(updatedGame);
         }
+
         return "redirect:/games";
     }
+
 
     @GetMapping("/delete/{id}")
     public String deleteGame(@PathVariable Long id) {
