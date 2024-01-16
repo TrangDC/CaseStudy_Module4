@@ -7,6 +7,8 @@ import com.example.case_study_m4.repository.IRoleRepository;
 import com.example.case_study_m4.repository.IUserRepository;
 import com.example.case_study_m4.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -95,4 +97,9 @@ public class UserService implements IUserService {
         role.setName("ROLE_USER");
         return iRoleRepository.save(role);
     }
+
+    public Page<User> findAllPage(Pageable pageable) {
+        return iUserRepository.findAll(pageable);
+    }
+
 }

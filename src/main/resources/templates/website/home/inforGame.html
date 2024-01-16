@@ -12,7 +12,34 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .brand-text {
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-text .text-primary {
+            font-size: 1.5em; /* Điều chỉnh kích thước chữ "T" */
+            font-weight: bold;
+            border: 3px solid #fff; /* Điều chỉnh độ đậm và màu viền */
+            border-radius: 8px; /* Điều chỉnh độ cong của viền */
+            padding: 5px; /* Điều chỉnh khoảng cách giữa chữ và viền */
+            margin-right: 5px; /* Điều chỉnh khoảng cách giữa chữ và chữ "Shop" */
+        }
+
+        .brand-text .text-shop {
+            font-size: 1em; /* Điều chỉnh kích thước chữ "Shop" */
+            font-weight: normal; /* Chữ "Shop" không in đậm */
+        }
+        .input-group-text .btn {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-group-text .btn:hover {
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 
 </head>
 <body>
@@ -28,8 +55,8 @@
                 <a class="text-dark" href="">Support</a>
             </div>
         </div>
-        <div class="col-lg-2 text-center">
-            <div class="d-inline-flex align-items-right ml-auto">
+        <div class="col-lg-6 text-center text-lg-right">
+            <div class="d-inline-flex align-items-center">
                 <a class="text-dark px-2" href="">
                     <i class="fab fa-facebook-f"></i>
                 </a>
@@ -62,42 +89,48 @@
                 <div class="input-group">
                     <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Search for game">
                     <div class="input-group-append">
-                        <span class="input-group-text bg-transparent">
-                            <button type="submit" value="Search" class="btn btn-primary">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </span>
+                          <span class="input-group-text bg-transparent">
+    <button type="submit" value="Search" class="btn btn-primary">
+        <i class="fa fa-search"></i> <!-- Sử dụng icon thay vì chữ -->
+    </button>
+</span>
                     </div>
                 </div>
             </form>
         </div>
+
+        <div>
+            <div th:if="${not #authorization.expression('isAuthenticated()')}">
+                <a th:href="@{/login}">Đăng nhập</a>
+                <a th:href="@{/register}">Đăng ký</a>
+            </div>
+
+            <!-- Hiển thị thông tin user nếu đăng nhập với vai trò user -->
+            <div th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
+                <span>Chào mừng, <span th:text="${user.username}"></span>!</span>
+                <a th:href="@{/logout}">Đăng xuất</a>
+                <a th:href="@{/logout}">Thông tin user</a>
+            </div>
+
+            <!-- Hiển thị thông tin admin nếu đăng nhập với vai trò admin -->
+            <div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                <span>Chào mừng, admin!</span>
+                <a th:href="@{/logout}">Thông tin admin</a>
+                <a th:href="@{/logout}">Đăng xuất</a>
+            </div>
+        </div>
+
+
+        <div class="col-lg-3 col-6 text-right">
+
+            <!--            Nút dẫn tới trang shopping -cart-->
+            <a href="/shopping-cart" class="btn border">
+
+                <i class="fas fa-shopping-cart text-primary"></i>
+                <span class="badge">0</span>
+            </a>
+        </div>
     </div>
-</div>
-
-
-<!--        <div>-->
-<!--            <div th:if="${not #authorization.expression('isAuthenticated()')}">-->
-<!--                <a th:href="@{/login}">Đăng nhập</a>-->
-<!--                <a th:href="@{/register}">Đăng ký</a>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Hiển thị thông tin user nếu đăng nhập với vai trò user &ndash;&gt;-->
-<!--            <div th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">-->
-<!--                <span>Chào mừng, <span th:text="${user.username}"></span>!</span>-->
-<!--                <a th:href="@{/logout}">Đăng xuất</a>-->
-<!--                <a th:href="@{/logout}">Thông tin user</a>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Hiển thị thông tin admin nếu đăng nhập với vai trò admin &ndash;&gt;-->
-<!--            <div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">-->
-<!--                <span>Chào mừng, admin!</span>-->
-<!--                <a th:href="@{/logout}">Thông tin admin</a>-->
-<!--                <a th:href="@{/logout}">Đăng xuất</a>-->
-<!--            </div>-->
-<!--        </div>-->
-
-
-
 </div>
 <!-- Topbar End -->
 
@@ -134,28 +167,15 @@
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
                     </div>
-                    <!-- Dang ky, dang nhap -->
+                    <!--                        Dang ky,dang nhap-->
                     <div class="navbar-nav ml-auto py-0">
-                        <div class="d-flex">
-
-                            <a th:href="@{/home/users/{id}(id=${user.id})}">Check User</a>
-                            <button th:href="@{/login}" type="button" class="btn btn-primary me-2">Login</button>
-                            <button th:href="@{/register}" type="button" class="btn btn-primary me-2">Register</button>
-
-                            <!-- Nút dẫn tới trang shopping-cart -->
-                            <a href="/shopping-cart" class="btn border d-flex align-items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cart me-1" viewBox="0 0 16 16">
-                                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
-                                </svg>
-                                <span class="badge">0</span>
-                            </a>
-                        </div>
+                        <a href="" class="nav-item nav-link">Login</a>
+                        <a href="" class="nav-item nav-link">Register</a>
                     </div>
                 </div>
             </nav>
 
-
-            <img src="../../../static/image/home background.png" height="400" width="950"/>
+            <img src="../image/icon.png" height="350" width="1000"/>
 
         </div>
     </div>
@@ -173,7 +193,7 @@
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="card product-item border-0 mb-4">
                     <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-<!--                        <img class="img-fluid w-100" th:src="@{'/image/' + ${game.image}}" alt="">-->
+                        <!--                        <img class="img-fluid w-100" th:src="@{'/image/' + ${game.image}}" alt="">-->
                         <img class="img-fluid w-100"
                              th:if="${game.image == null or game.image == ''}"
                              th:src="@{'/image/No image.jpg'}" alt="Default Image" />
