@@ -82,7 +82,7 @@ public class HomeController {
     }
 
     @GetMapping("/filter")
-    public ModelAndView filterGamesByCategory(@RequestParam("id") Long id,
+    public ModelAndView filterGamesByCategory(@PathVariable Long id,
                                               @PageableDefault(size = 8) Pageable pageable) {
         ModelAndView modelAndView = new ModelAndView("website/home/main");
 
@@ -97,6 +97,7 @@ public class HomeController {
         }
         return modelAndView;
     }
+
 
     // thêm vào giỏ hàng
     @GetMapping("/addToCart/{id}")

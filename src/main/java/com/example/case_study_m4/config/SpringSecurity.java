@@ -33,7 +33,7 @@ public class SpringSecurity {
                                 .requestMatchers("/home/**").permitAll()
                                 .requestMatchers("/index").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers("/admin/users/**").hasRole("ADMIN")
-                                .requestMatchers("/games/**").hasRole("ADMIN")
+                                .requestMatchers("/admin/games/**").hasRole("ADMIN")
                                 .requestMatchers("/shopping-cart/**").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers("/checkout/**").hasAnyRole("ADMIN", "USER")
                 ).formLogin(
