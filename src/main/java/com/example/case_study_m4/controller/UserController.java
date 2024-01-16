@@ -1,14 +1,10 @@
 package com.example.case_study_m4.controller;
 
 import com.example.case_study_m4.model.Order;
-import com.example.case_study_m4.model.OrderDetail;
 import com.example.case_study_m4.model.User;
-import com.example.case_study_m4.repository.IOrderDetailRepository;
-import com.example.case_study_m4.repository.IOrderRepository;
 import com.example.case_study_m4.repository.IUserRepository;
 import com.example.case_study_m4.service.IOrderService;
 import com.example.case_study_m4.service.IUserService;
-import com.example.case_study_m4.service.impl.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,8 +25,6 @@ public class UserController {
     @Autowired
     private IUserRepository userRepository;
     @Autowired
-    private IOrderDetailRepository orderDetailRepository;
-    @Autowired
     private IOrderService iOrderService;
 
     @GetMapping
@@ -40,20 +34,8 @@ public class UserController {
         modelAndView.addObject("users", userPage);
         return modelAndView;
     }
-// Hiển thị 1 thằng users
-    @GetMapping("/{id}")
-    public String showUser(@PathVariable long id, Model model) {
-        User user = userRepository.findById(id).orElse(null);
 
-        if (user != null) {
-            model.addAttribute("user", user);
-        } else {
-            model.addAttribute("message", "Student not found");
-        }
-
-        return "/admin/users/view";
-    }
-// Hiển thị danh sách order gồm orderdetails của 1 user
+// Hiển thị danh sách order gồm order details của 1 user
     @GetMapping("/orders/{id}")
     public String showDetail(@PathVariable Long id, Model model) {
         List<Order> orders = iOrderService.findByUserId(id);

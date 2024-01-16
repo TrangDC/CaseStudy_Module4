@@ -28,6 +28,7 @@
 </head>
 <body>
 <h1>User Orders with Details</h1>
+<h4><a th:href="@{/admin/users}">Back</a></h4>
 
 <div th:each="order : ${orders}">
     <h3 th:text="${'Order ID: ' + order.id}"></h3>

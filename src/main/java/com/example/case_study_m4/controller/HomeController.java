@@ -1,11 +1,10 @@
 package com.example.case_study_m4.controller;
 
-import com.example.case_study_m4.model.Cart;
-import com.example.case_study_m4.model.Category;
-import com.example.case_study_m4.model.Game;
-import com.example.case_study_m4.model.User;
+import com.example.case_study_m4.model.*;
+import com.example.case_study_m4.repository.IUserRepository;
 import com.example.case_study_m4.service.ICategoryService;
 import com.example.case_study_m4.service.IGameService;
+import com.example.case_study_m4.service.IOrderService;
 import com.example.case_study_m4.service.IUserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -37,7 +38,10 @@ public class HomeController {
 
     @Autowired
     private IUserService userService;
-
+    @Autowired
+    private IUserRepository userRepository;
+    @Autowired
+    private IOrderService iOrderService;
     @ModelAttribute("categories")
     public Iterable<Category> listCategories() {
         return categoryService.findAll();
@@ -127,5 +131,20 @@ public class HomeController {
         }
         cart.subProduct(gameOptional.get());
         return "redirect:/api/products";
+    }
+
+    // Hiển thị 1 thằng users
+    @GetMapping("/users/{id}")
+    public String showUser(@PathVariable long id, Model model) {
+        User user = userRepository.findById(id).orElse(null);
+        List<Order> orders = iOrderService.findByUserId(id);
+        model.addAttribute("orders", orders);
+        if (user != null) {
+            model.addAttribute("user", user);
+        } else {
+            model.addAttribute("message", "Users not found");
+        }
+
+        return "/website/home/user_infor";
     }
 }
