@@ -4,7 +4,6 @@ import com.example.case_study_m4.model.Category;
 import com.example.case_study_m4.model.Game;
 import com.example.case_study_m4.service.ICategoryService;
 import com.example.case_study_m4.service.IGameService;
-import com.example.case_study_m4.service.IGameUpFileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
