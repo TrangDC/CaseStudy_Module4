@@ -127,38 +127,12 @@
 <!-- Topbar End -->
 
 <!-- Navbar Start -->
-<div class="container-fluid mb-5">
+<div class="container">
     <div class="row border-top px-xl-5">
-        <div class="col-lg-3 d-none d-lg-block">
-            <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
-                <h6 class="m-0">Categories</h6>
-
-            </a>
-            <nav class="collapse show navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical">
-                <form th:action="@{/home/filter}" method="get">
-                    <select id="category" name="id" class="form-control">
-                        <option value="0" selected> All</option>
-                        <th:block th:each="category : ${categories}">
-                            <option th:value="${category.id}" th:text="${category.name}"></option>
-                        </th:block>
-                    </select>
-                    <button type="submit" class="btn btn-primary">
-                        Filter
-                    </button>
-                </form>
-            </nav>
-        </div>
         <div class="col-lg-9">
             <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
-                <a href="" class="text-decoration-none d-block d-lg-none">
-                    <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">T</span>Shop</h1>
-                </a>
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                    <div class="navbar-nav mr-auto py-0">
-                    </div>
                     <!-- Dang ky, dang nhap -->
                     <div class="navbar-nav ml-auto py-0">
                         <div class="d-flex">
@@ -177,35 +151,35 @@
                 </div>
             </nav>
 
-
             <!-- Products Start -->
             <div class="container-fluid pt-5">
-                <div class="text-center mb-4">
-                    <h2 class="section-title px-5"><span class="px-2">Information Games</span></h2>
-                </div>
                 <div class="row px-xl-5 pb-3">
-
+                    <div class="text-center mb-4">
+                        <h2 class="section-title px-5"><span class="px-2">Information Games</span></h2>
+                    </div>
                     <!-- Hiển thị chi tiết game -->
-                    <div class="container-fluid pt-5">
-                        <div class="row px-xl-5 pb-3">
+                    <div class="container">
+                        <div class="row">
                             <div class="col-lg-8">
-                                <!-- Thêm một kiểm tra xem game có tồn tại không -->
-                                <div>
-                                    <img  style="width: 600px; height: 450px;"
-                                          th:src="@{'/image/' + ${game.image}}" alt=""/>
+                                <div class="col-md-6">
+                                    <img style="width: 600px; height: 450px;"
+                                         th:src="@{'/image/' + ${game.image}}" alt=""/>
                                 </div>
 
-                                <div class="card-body">
+                                <div class="col-md-6">
                                     <h5 class="card-title" th:text="${game.name}"></h5>
                                     <p class="card-text" th:text="${game.description}"></p>
                                     <p class="card-text" th:text="${game.category.name}"></p>
                                     <p class="card-text" th:text="${game.platform}"></p>
                                     <p class="card-text" th:text="${game.releaseDate}"></p>
 
-                                </div>
-                                <div class="card-footer d-flex justify-content-between bg-light border">
-                                    <p class="card-text"><small class="text-muted" th:text="'Price: ' + ${game.price} + ' USD'"></small></p>
-                                    <a th:href="@{/home/addToCart/__${game.id}__(action='list')}" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                                    <div class="card-footer d-flex justify-content-between bg-light border">
+                                        <p class="card-text"><small class="text-muted"
+                                                                    th:text="'Price: ' + ${game.price} + ' USD'"></small></p>
+                                        <a th:href="@{/home/addToCart/__${game.id}__(action='list')}">
+                                           class="btn btn-sm text-dark p-0"><i
+                                                class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -217,7 +191,7 @@
         </div>
     </div>
 </div>
-<!-- Navbar End -->
+
 
 
 <!-- Footer Start -->
