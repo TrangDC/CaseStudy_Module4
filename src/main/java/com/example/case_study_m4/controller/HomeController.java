@@ -13,6 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,10 +51,61 @@ public class HomeController {
         return new Cart();
     }
 
-    @GetMapping
+    @GetMapping()
     public ModelAndView listGames(@RequestParam(defaultValue = "0") int page,
                                   Principal principal) {
-        ModelAndView modelAndView = new ModelAndView("website/home/main");
+//        ModelAndView modelAndView = new ModelAndView("website/home/main");
+//
+//
+//
+//        if (principal != null) {
+//            String email = principal.getName();
+//            User user = userService.findUserByEmail(email);
+//            modelAndView.addObject("user", user);
+//        }
+//
+//        PageRequest pageable = PageRequest.of(page, 8);
+//        Page<Game> games = gameService.findAll(pageable);
+//
+//        modelAndView.addObject("games", games);
+//        return modelAndView;
+
+        ModelAndView modelAndView;
+
+        // Lấy thông tin user từ SecurityContextHolder
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principals = authentication.getPrincipal();
+
+            if (principals instanceof UserDetails) {
+                // Lấy thông tin từ UserDetails
+                String email = ((UserDetails) principals).getUsername();
+
+                User userLogin = userService.findUserByEmail(email);
+
+                if (userLogin.getRoles().equals("ADMIN")) {
+                    // Redirect admin to admin/games/list
+                    return new ModelAndView("redirect:/admin/games/list");
+                } else if (userLogin.getRoles().equals("USER")) {
+                    modelAndView = new ModelAndView("website/home/main");
+
+                    if (principal != null) {
+                        String emails = principal.getName();
+                        User user = userService.findUserByEmail(emails);
+                        modelAndView.addObject("user", user);
+                    }
+
+                    PageRequest pageable = PageRequest.of(page, 8);
+                    Page<Game> games = gameService.findAll(pageable);
+
+                    modelAndView.addObject("games", games);
+                    return modelAndView;
+                }
+            }
+        }
+
+        modelAndView = new ModelAndView("website/home/main");
 
         if (principal != null) {
             String email = principal.getName();

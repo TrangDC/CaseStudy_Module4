@@ -148,9 +148,10 @@ public class OrderController {
                         orderDetail.setPrice((double) (game.getPrice() * quantity));
                         iOrderDetailService.save(orderDetail);
 
+                        Optional<Game> actualGame = iGameService.findById(game.getId());
                         // Trừ đi số lượng sản phẩm
-                        game.setQuantity(game.getQuantity() - quantity);
-                        iGameService.save(game);
+                        actualGame.get().setQuantity(actualGame.get().getQuantity() - quantity);
+                        iGameService.save(actualGame.get());
                     }
                     // Xóa giỏ hàng
                     cart.deleteAllFromCart();
