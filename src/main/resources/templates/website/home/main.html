@@ -12,35 +12,35 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
-    <style>
-        .brand-text {
-            display: flex;
-            align-items: center;
-        }
+<!--    <style>-->
+<!--        .brand-text {-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--        }-->
 
-        .brand-text .text-primary {
-            font-size: 1.5em; /* Điều chỉnh kích thước chữ "T" */
-            font-weight: bold;
-            border: 3px solid #fff; /* Điều chỉnh độ đậm và màu viền */
-            border-radius: 8px; /* Điều chỉnh độ cong của viền */
-            padding: 5px; /* Điều chỉnh khoảng cách giữa chữ và viền */
-            margin-right: 5px; /* Điều chỉnh khoảng cách giữa chữ và chữ "Shop" */
-        }
+<!--        .brand-text .text-primary {-->
+<!--            font-size: 1.5em; /* Điều chỉnh kích thước chữ "T" */-->
+<!--            font-weight: bold;-->
+<!--            border: 3px solid #fff; /* Điều chỉnh độ đậm và màu viền */-->
+<!--            border-radius: 8px; /* Điều chỉnh độ cong của viền */-->
+<!--            padding: 5px; /* Điều chỉnh khoảng cách giữa chữ và viền */-->
+<!--            margin-right: 5px; /* Điều chỉnh khoảng cách giữa chữ và chữ "Shop" */-->
+<!--        }-->
 
-        .brand-text .text-shop {
-            font-size: 1em; /* Điều chỉnh kích thước chữ "Shop" */
-            font-weight: normal; /* Chữ "Shop" không in đậm */
-        }
-        .input-group-text .btn {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
+<!--        .brand-text .text-shop {-->
+<!--            font-size: 1em; /* Điều chỉnh kích thước chữ "Shop" */-->
+<!--            font-weight: normal; /* Chữ "Shop" không in đậm */-->
+<!--        }-->
+<!--        .input-group-text .btn {-->
+<!--            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);-->
+<!--            transition: all 0.3s ease;-->
+<!--        }-->
 
-        .input-group-text .btn:hover {
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-    </style>
-    <link rel="stylesheet" href="/static/css/style.css">
+<!--        .input-group-text .btn:hover {-->
+<!--            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);-->
+<!--        }-->
+<!--    </style>-->
+    <link rel="stylesheet" href="/css/style.css">
 
 
 </head>
@@ -164,6 +164,8 @@
                     <!-- Dang ky, dang nhap -->
                     <div class="navbar-nav ml-auto py-0">
                         <div class="d-flex">
+
+                            <a th:href="@{/home/users/{id}(id=${user.id})}">Check User</a>
                             <button th:href="@{/login}" type="button" class="btn btn-primary me-2">Login</button>
                             <button th:href="@{/register}" type="button" class="btn btn-primary me-2">Register</button>
 

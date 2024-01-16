@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/games")
+@RequestMapping("/admin/games")
 public class GameController {
     @Autowired
     private IGameService gameService;
@@ -144,14 +144,14 @@ public class GameController {
             gameService.save(updatedGame);
         }
 
-        return "redirect:/games";
+        return "redirect:/admin/games";
     }
 
 
     @GetMapping("/delete/{id}")
     public String deleteGame(@PathVariable Long id) {
            gameService.remove(id);
-           return "redirect:/games";
+           return "redirect:/admin/games";
     }
     @GetMapping("/search")
     public ModelAndView searchGame(@RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,

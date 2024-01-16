@@ -8,6 +8,7 @@ import com.example.case_study_m4.service.IOrderDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,5 +34,10 @@ public class OrderDetailService implements IOrderDetailService {
     @Override
     public void remove(Long id) {
 
+    }
+
+    @Override
+    public List<OrderDetail> findByOrder(Order order) {
+        return iOrderDetailRepository.findOrderDetailsByOrder(order);
     }
 }
