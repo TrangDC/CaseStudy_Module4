@@ -150,8 +150,8 @@ public class GameController {
 
     @GetMapping("/delete/{id}")
     public String deleteGame(@PathVariable Long id) {
-           gameService.remove(id);
-           return "redirect:/games";
+        gameService.remove(id);
+        return "redirect:/games";
     }
     @GetMapping("/search")
     public ModelAndView searchGame(@RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,

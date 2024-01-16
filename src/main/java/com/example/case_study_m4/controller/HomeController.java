@@ -58,14 +58,13 @@ public class HomeController {
     @GetMapping()
     public ModelAndView listGames(@RequestParam(defaultValue = "0") int page,
                                   Principal principal) {
-        ModelAndView modelAndView = new ModelAndView("website/home/main");
+        ModelAndView modelAndView = new ModelAndView("/website/home/main");
 
         if (principal != null) {
             String email = principal.getName();
             User user = userService.findUserByEmail(email);
             modelAndView.addObject("user", user);
         }
-
         PageRequest pageable = PageRequest.of(page, 8);
         Page<Game> games = gameService.findAll(pageable);
 
