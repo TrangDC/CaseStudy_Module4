@@ -30,6 +30,7 @@ public class SpringSecurity {
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/register/**").permitAll()
                                 .requestMatchers("/home/**").permitAll()
+                                .requestMatchers("/home").permitAll()
                                 .requestMatchers("/image/**", "/css/*", "/js/*").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/games/**").hasRole("ADMIN")

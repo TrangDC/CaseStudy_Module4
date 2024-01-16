@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>EShopper - Bootstrap Shop Template</title>
+    <title>Trang filter</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -101,7 +101,7 @@
                 </a>
                 <nav class="collapse show navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical">
                     <div class="navbar-nav w-100 overflow-hidden" style="height: 410px">
-                        <a th:each="category : ${categories}" th:href="@{/home/filter/{id}(id=${category.id})}" th:text="${category.name}" th:class="${selectedCategory != null and selectedCategory.id == category.id} ? 'nav-item nav-link active' : 'nav-item nav-link'"></a>
+                        <a th:each="category : ${categories}" th:href="@{/home/filter/{id}(id=${category.id})}" th:text="${category.name}" class= 'nav-item nav-link'></a>
                     </div>
                 </nav>
 
@@ -228,12 +228,12 @@
 
 <div class="container">
     <a th:if="${games.hasPrevious()}"
-       th:href="@{/home(page=${games.number - 1}, size=8)}"
+       th:href="@{/home/filter/${id}(page=${games.number - 1},id=${filter_id}, size=8)}"
        class="btn btn-primary">Prev</a>
     <span th:text="${games.number + 1}"></span>
     |&nbsp;<span th:text="${games.totalPages}"></span>
     <a th:if="${games.hasNext()}"
-       th:href="@{/home(page=${games.number + 1},size=8)}"
+       th:href="@{/home/filter/${id}(page=${games.number + 1},id=${filter_id}, size=8)}"
        class="btn btn-primary">Next</a>
 </div>
 
@@ -258,6 +258,9 @@
                 by
                 <a class="text-dark font-weight-semi-bold" href="https://htmlcodex.com">T-Team</a>
             </p>
+        </div>
+        <div class="col-md-6 px-xl-0 text-center text-md-right">
+            <img class="img-fluid" src="img/payments.png" alt="">
         </div>
     </div>
 </div>

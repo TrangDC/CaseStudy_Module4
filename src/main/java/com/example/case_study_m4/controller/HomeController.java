@@ -31,7 +31,6 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/home")
 @SessionAttributes("cart")
-
 public class HomeController {
     @Autowired
     private IGameService gameService;
@@ -74,9 +73,18 @@ public class HomeController {
     }
     @GetMapping("/search")
     public ModelAndView searchGame(@RequestParam("keyword") String keyword,
-                                   @PageableDefault(size = 8) Pageable pageable) {
+                                   @PageableDefault(size = 8) Pageable pageable,
+                                   Principal principal) {
 
-        ModelAndView modelAndView = new ModelAndView("website/home/main");
+
+        ModelAndView modelAndView = new ModelAndView("website/home/main_search");
+
+
+        if (principal != null) {
+            String email = principal.getName();
+            User user = userService.findUserByEmail(email);
+            modelAndView.addObject("user", user);
+        }
 
         Page<Game> games = gameService.searchByWord(keyword, pageable);
         modelAndView.addObject("games", games);
@@ -84,21 +92,33 @@ public class HomeController {
         return modelAndView;
     }
 
-    @GetMapping("/filter")
-    public ModelAndView filterGamesByCategory(@RequestParam("id") Long id,
-                                              @PageableDefault(size = 8) Pageable pageable) {
-        ModelAndView modelAndView = new ModelAndView("website/home/main");
+    @GetMapping("/filter/{id}")
+    public String filterGamesByCategory(@PathVariable("id") String id,
+                                        @PageableDefault(size = 8) Pageable pageable,
+                                        Model model,
+                                        Principal principal) {
+        System.out.println(id);
 
-        Optional<Category> category = categoryService.findById(id);
+        if (principal != null) {
+            String email = principal.getName();
+            User user = userService.findUserByEmail(email);
+            model.addAttribute("user", user);
+        }
+
+        Optional<Category> category = categoryService.findById(Long.valueOf(id));
         if (category.isPresent()) {
             Page<Game> games = gameService.findByCategory(category.get(), pageable);
-            modelAndView.addObject("games", games);
-            modelAndView.addObject("selectedCategory", category.get());
+            System.out.println(category.get());
+            model.addAttribute("games", games);
+            model.addAttribute("filter_id", id);
+            model.addAttribute("selectedCategory", category.get());
+            return "website/home/main_filter";
         } else {
+            System.out.println("error");
             Page<Game> games = gameService.findAll(pageable);
-            modelAndView.addObject("games", games);
+            model.addAttribute("games", games);
+            return "website/home/main";
         }
-        return modelAndView;
     }
 
     // thêm vào giỏ hàng
@@ -110,12 +130,15 @@ public class HomeController {
 
         if(!gameOptional.isPresent()) {
             return "/error_404";
+        } else {
+            if (gameOptional.get().isActive() && gameOptional.get().getQuantity() != 0 ) {
+                if (action.equals("show")) {
+                    cart.addProduct(gameOptional.get());
+                    return "redirect:/shopping-cart";
+                }
+                cart.addProduct(gameOptional.get());
+            }
         }
-        if (action.equals("show")) {
-            cart.addProduct(gameOptional.get());
-            return "redirect:/shopping-cart";
-        }
-        cart.addProduct(gameOptional.get());
         return "redirect:/home";
     }
 

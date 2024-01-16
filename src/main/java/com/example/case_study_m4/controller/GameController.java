@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/games")
+@RequestMapping("/admin/games")
 public class GameController {
     @Autowired
     private IGameService gameService;
@@ -178,11 +178,11 @@ public class GameController {
 
 
     @GetMapping("/filter")
-    public ModelAndView filterGamesByCategory(@RequestParam("id") Long id,
+    public ModelAndView filterGamesByCategory(@RequestParam("id") String id,
                                               @PageableDefault(size = 8) Pageable pageable) {
         ModelAndView modelAndView = new ModelAndView("/admin/games/list");
 
-        Optional<Category> category = categoryService.findById(id);
+        Optional<Category> category = categoryService.findById(Long.valueOf(id));
         if (category.isPresent()) {
             Page<Game> games = gameService.findByCategory(category.get(), pageable);
             modelAndView.addObject("games", games);
