@@ -12,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +31,6 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/home")
 @SessionAttributes("cart")
-
 public class HomeController {
     @Autowired
     private IGameService gameService;
@@ -52,10 +54,31 @@ public class HomeController {
         return new Cart();
     }
 
-    @GetMapping
+    @GetMapping()
     public ModelAndView listGames(@RequestParam(defaultValue = "0") int page,
                                   Principal principal) {
-        ModelAndView modelAndView = new ModelAndView("website/home/main");
+        ModelAndView modelAndView = new ModelAndView("/website/home/main");
+
+        if (principal != null) {
+            String email = principal.getName();
+            User user = userService.findUserByEmail(email);
+            modelAndView.addObject("user", user);
+        }
+        PageRequest pageable = PageRequest.of(page, 8);
+        Page<Game> games = gameService.findAll(pageable);
+
+        modelAndView.addObject("games", games);
+        return modelAndView;
+
+    }
+    @GetMapping("/search")
+    public ModelAndView searchGame(@RequestParam("keyword") String keyword,
+                                   @PageableDefault(size = 8) Pageable pageable,
+                                   Principal principal) {
+
+
+        ModelAndView modelAndView = new ModelAndView("website/home/main_search");
+
 
         if (principal != null) {
             String email = principal.getName();
@@ -63,41 +86,40 @@ public class HomeController {
             modelAndView.addObject("user", user);
         }
 
-        PageRequest pageable = PageRequest.of(page, 8);
-        Page<Game> games = gameService.findAll(pageable);
-
-        modelAndView.addObject("games", games);
-        return modelAndView;
-    }
-    @GetMapping("/search")
-    public ModelAndView searchGame(@RequestParam("keyword") String keyword,
-                                   @PageableDefault(size = 8) Pageable pageable) {
-
-        ModelAndView modelAndView = new ModelAndView("website/home/main");
-
         Page<Game> games = gameService.searchByWord(keyword, pageable);
         modelAndView.addObject("games", games);
         modelAndView.addObject("keyword", keyword);
         return modelAndView;
     }
 
-    @GetMapping("/filter")
-    public ModelAndView filterGamesByCategory(@PathVariable Long id,
-                                              @PageableDefault(size = 8) Pageable pageable) {
-        ModelAndView modelAndView = new ModelAndView("website/home/main");
+    @GetMapping("/filter/{id}")
+    public String filterGamesByCategory(@PathVariable("id") String id,
+                                        @PageableDefault(size = 8) Pageable pageable,
+                                        Model model,
+                                        Principal principal) {
+        System.out.println(id);
 
-        Optional<Category> category = categoryService.findById(id);
+        if (principal != null) {
+            String email = principal.getName();
+            User user = userService.findUserByEmail(email);
+            model.addAttribute("user", user);
+        }
+
+        Optional<Category> category = categoryService.findById(Long.valueOf(id));
         if (category.isPresent()) {
             Page<Game> games = gameService.findByCategory(category.get(), pageable);
-            modelAndView.addObject("games", games);
-            modelAndView.addObject("selectedCategory", category.get());
+            System.out.println(category.get());
+            model.addAttribute("games", games);
+            model.addAttribute("filter_id", id);
+            model.addAttribute("selectedCategory", category.get());
+            return "website/home/main_filter";
         } else {
+            System.out.println("error");
             Page<Game> games = gameService.findAll(pageable);
-            modelAndView.addObject("games", games);
+            model.addAttribute("games", games);
+            return "website/home/main";
         }
-        return modelAndView;
     }
-
 
     // thêm vào giỏ hàng
     @GetMapping("/addToCart/{id}")
@@ -108,12 +130,15 @@ public class HomeController {
 
         if(!gameOptional.isPresent()) {
             return "/error_404";
+        } else {
+            if (gameOptional.get().isActive() && gameOptional.get().getQuantity() != 0 ) {
+                if (action.equals("show")) {
+                    cart.addProduct(gameOptional.get());
+                    return "redirect:/shopping-cart";
+                }
+                cart.addProduct(gameOptional.get());
+            }
         }
-        if (action.equals("show")) {
-            cart.addProduct(gameOptional.get());
-            return "redirect:/shopping-cart";
-        }
-        cart.addProduct(gameOptional.get());
         return "redirect:/home";
     }
 
@@ -134,6 +159,20 @@ public class HomeController {
         return "redirect:/api/products";
     }
 
+    // Hiển thị 1 thằng users
+    @GetMapping("/users/{id}")
+    public String showUser(@PathVariable long id, Model model) {
+        User user = userRepository.findById(id).orElse(null);
+        List<Order> orders = iOrderService.findByUserId(id);
+        model.addAttribute("orders", orders);
+        if (user != null) {
+            model.addAttribute("user", user);
+        } else {
+            model.addAttribute("message", "Users not found");
+        }
+
+        return "/website/home/user_infor";
+    }
 
     @GetMapping("/gameDetail/{id}")
     public ModelAndView showGameDetail(@PathVariable Long id) {
@@ -148,21 +187,5 @@ public class HomeController {
         }
 
         return modelAndView;
-    }
-
-    // Hiển thị 1 thằng users
-    @GetMapping("/users/{id}")
-    public String showUser(@PathVariable long id, Model model) {
-        User user = userRepository.findById(id).orElse(null);
-        List<Order> orders = iOrderService.findByUserId(id);
-        model.addAttribute("orders", orders);
-        if (user != null) {
-            model.addAttribute("user", user);
-        } else {
-            model.addAttribute("message", "Users not found");
-        }
-
-        return "/website/home/user_infor";
-
     }
 }

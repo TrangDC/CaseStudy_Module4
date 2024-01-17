@@ -2,8 +2,6 @@ package com.example.case_study_m4.controller;
 
 import com.example.case_study_m4.model.Category;
 import com.example.case_study_m4.model.Game;
-import com.example.case_study_m4.model.User;
-import com.example.case_study_m4.repository.IGameRepository;
 import com.example.case_study_m4.service.ICategoryService;
 import com.example.case_study_m4.service.IGameService;
 import jakarta.validation.Valid;
@@ -31,8 +29,6 @@ import java.util.Optional;
 public class GameController {
     @Autowired
     private IGameService gameService;
-    @Autowired
-    private IGameRepository gameRepository;
 
     @Autowired
     private ICategoryService categoryService;
@@ -148,14 +144,14 @@ public class GameController {
             gameService.save(updatedGame);
         }
 
-        return "redirect:/admin/games";
+        return "redirect:/games";
     }
 
 
     @GetMapping("/delete/{id}")
     public String deleteGame(@PathVariable Long id) {
-           gameService.remove(id);
-           return "redirect:/admin/games";
+        gameService.remove(id);
+        return "redirect:/games";
     }
     @GetMapping("/search")
     public ModelAndView searchGame(@RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,
@@ -182,11 +178,11 @@ public class GameController {
 
 
     @GetMapping("/filter")
-    public ModelAndView filterGamesByCategory(@RequestParam("id") Long id,
+    public ModelAndView filterGamesByCategory(@RequestParam("id") String id,
                                               @PageableDefault(size = 8) Pageable pageable) {
         ModelAndView modelAndView = new ModelAndView("/admin/games/list");
 
-        Optional<Category> category = categoryService.findById(id);
+        Optional<Category> category = categoryService.findById(Long.valueOf(id));
         if (category.isPresent()) {
             Page<Game> games = gameService.findByCategory(category.get(), pageable);
             modelAndView.addObject("games", games);

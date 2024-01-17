@@ -127,6 +127,11 @@
     </style>
 </head>
 <body>
+<div class="col-lg-3 d-none d-lg-block">
+    <a href="/home" class="text-decoration-none">
+        <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">T</span>Shop</h1>
+    </a>
+</div>
 <form th:object="${user}"
       method="POST">
     <input type="hidden" th:field="*{id}"/>
@@ -177,7 +182,6 @@
             </div>
             <div class="py-3 pb-4 border-bottom">
                 <button type="submit" class="btn btn-primary mr-3">Save</button>
-                <button class="btn btn-primary mr-3"><a th:href="@{/home}" ></a>Home</button>
             </div>
 
         </div>
