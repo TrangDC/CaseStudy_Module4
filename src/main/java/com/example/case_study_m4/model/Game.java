@@ -59,12 +59,4 @@ public class Game {
     @ManyToOne
     @JoinColumn(name = "c_id")
     private Category category;
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
 }
